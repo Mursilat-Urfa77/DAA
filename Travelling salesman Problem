@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <limits.h>
+
+#define V 4 // Number of vertices (cities)
+
+int min(int a, int b) {
+    return (a < b) ? a : b;
+}
+
+int tsp(int graph[V][V], int visited, int src, int curr, int count) {
+    
+    if (visited == (1 << V) - 1) {
+        return graph[curr][src]; 
+    }
+
+    int min_dist = INT_MAX;
+    for (int i = 0; i < V; i++) {
+        
+        if (!(visited & (1 << i)) && i != curr) {
+            visited |= (1 << i);
+            int next_dist = tsp(graph, visited, src, i, count+1); 
+            min_dist = min(min_dist, graph[curr][i] + next_dist);
+            visited &= ~(1 << i);
+        }
+    }
+
+    return min_dist;
+}
+
+int main() {
+    int graph[V][V] = {
+        {0, 10, 15, 20},
+        {10, 0, 35, 25},
+        {15, 35, 0, 30},
+        {20, 25, 30, 0}
+    };
+
+    int visited = 1 << 0; // Start from city 0
+    int src = 0; // Starting city
+    int shortest_path = tsp(graph, visited, src, src, 1);
+
+    printf("The shortest path length is %d\n", shortest_path);
+
+    return 0;
+}
